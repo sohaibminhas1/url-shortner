@@ -6,7 +6,14 @@ if (!secret) {
 }
 
 function setUser(user) {
-  return jwt.sign(user.toObject(),secret,{ expiresIn: process.env.JWT_EXPIRES_IN || "7d" } // token expiry
+  return jwt.sign(
+    {
+      _id: user._id,
+      email: user.email,
+      role: user.role
+    },
+    secret,
+    { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
   );
 }
 

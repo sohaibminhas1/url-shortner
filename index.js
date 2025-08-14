@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const userRoute = require('./Routes/user');
 const urlRoute = require("./Routes/url");
 const { connectToDB } = require("./DBconnection");
-const { restrictToLoggedinUserOnly, checkAuth } = require("./middleware/auth");
+const { checkForAuthentication, restrictTo } = require("./middleware/auth");
 const staticRoute = require("./Routes/staticRouter");
 const URL = require("./Models/url");
 
@@ -25,9 +25,10 @@ app.set('views', path.resolve("./views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(checkForAuthentication);
 
-app.use("/url", restrictToLoggedinUserOnly, urlRoute);
-app.use("/", checkAuth, staticRoute);
+app.use("/url", restrictTo(["NORMAL","ADMIN"]), urlRoute);
+app.use("/",  staticRoute);
 app.use("/user", userRoute);
 
 app.get('/url/:shortId', async (req, res) => {
