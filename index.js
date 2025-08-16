@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 
 const userRoute = require('./Routes/user');
 const urlRoute = require("./Routes/url");
+const discordRoutes = require('./Routes/discordRoutes');
 const { connectToDB } = require("./DBconnection");
 const { checkForAuthentication, restrictTo } = require("./middleware/auth");
 const staticRoute = require("./Routes/staticRouter");
@@ -27,9 +28,30 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(checkForAuthentication);
 
-app.use("/url", restrictTo(["NORMAL","ADMIN"]), urlRoute);
+app.use("/url", urlRoute);
 app.use("/",  staticRoute);
 app.use("/user", userRoute);
+app.use('/api', discordRoutes);
+
+console.log('Discord routes registered at: /api/discord');
+
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path}`);
+    next();
+});
+
+app.use('/api/discord', (req, res, next) => {
+    console.log(`Discord API route hit: ${req.method} ${req.path}`);
+    next();
+}, discordRoutes);
+
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'ok', 
+        timestamp: new Date().toISOString(),
+        service: 'URL Shortener'
+    });
+});
 
 app.get('/url/:shortId', async (req, res) => {
     const shortId = req.params.shortId;
@@ -52,5 +74,6 @@ app.get('/url/:shortId', async (req, res) => {
 
     res.redirect(entry.redirectURL);
 });
+
 
 app.listen(PORT, () => console.log(`Server running at port: ${PORT}`));

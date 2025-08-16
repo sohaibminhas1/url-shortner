@@ -21,9 +21,10 @@ async function handleUserLogin(req,res) {
     if(!user) return res.render('login', {
         error : "Invalid username or password",
     })
-    
-
-    
+    if (user.authProvider !== 'local') {
+    return res.status(400).json({ error: 'Password login is not allowed for this account' });
+}
+      
     const token = setUser(user);
     res.cookie("token", token);
     return res.redirect("/");

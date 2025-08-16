@@ -16,7 +16,11 @@ const urlSchema = new mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', 
-    }
+    },
+    discordUserId: {
+    type: String,
+    required: false
+}
 },
 {timestamps : true}
 

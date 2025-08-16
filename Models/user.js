@@ -20,7 +20,17 @@ const userSchema = new mongoose.Schema({
         type: String,
         required : true,
         
-    }
+    },
+    authProvider:
+    {
+        type: String,
+        enum: ['local', 'discord'],
+        default: 'local'
+    },
+     discordUserId: { 
+        type: String,
+        required: false
+     }
 },{timestamps : true})
 
 
